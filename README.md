@@ -6,6 +6,8 @@ The open-source version of the MARL soccer environment is built on top of [Isaac
 
 This repository contains the multi-agent soccer environment `isaaclab_marl` and a heavily modified [rsl_rl](https://github.com/leggedrobotics/rsl_rl) training pipeline implemented in `rsl_marl`. The original implementation and paper results are based on Isaac Gym. This migration effort was made due to Isaac Gym's deprecation.         
 
+**Maintainer: Zichong Li, zichong1230@gmail.com**
+
 <figure>
   <figcaption><em>Cooperative Gameplay Like Never Before! (Isaaclab)</em></figcaption>
   <img src="docs/gifs/isaaclab.gif" alt="Isaaclab Play" title="Typical Gameplay in Isaac Lab">
@@ -17,9 +19,10 @@ This repository contains the multi-agent soccer environment `isaaclab_marl` and 
   <img src="docs/gifs/isaacgym.gif" alt="Isaaclab Play" title="Higher Agent Number (Isaac Gym)">
 </figure>
 
+
 ## Installation
 
-- Install Isaac Sim and Lab by following the [installation guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html). We recommend using the conda installation as it simplifies calling Python scripts from the terminal.
+- Install **Isaac Sim 4.5** and **Isaac Lab 2.0.2** by following the [installation guide](https://isaac-sim.github.io/IsaacLab/v2.0.2/source/setup/installation/index.html). We recommend using the conda installation as it simplifies calling Python scripts from the terminal.
 
 - Clone this repository separately from the Isaac Lab installation (i.e., outside the `IsaacLab` directory):
 
@@ -56,9 +59,9 @@ python scripts/rsl_rl/play.py --task=Isaac-Soccer-Play-v0 --experiment_name=00_e
 ```
 Note: The number of agents can be configured via the `SoccerMARLEnvPlayCfg` class.
 
-### Useful Visualization Tools ### 
+## Visualization Tools ## 
 
-## Trajectory Analyser ## 
+### Trajectory Analyser ###
 ![Trajectory Analyser](docs/gifs/3v3_traj.gif) 
 
 The framework provides a convenient GUI to visualize and compare policy behavior across many experiments. The trajectories are collected periodically during training on the evaluation environments, which is about 15% of the total environment. In these environments, the adversaries are configured to use a simple heuristic bot as a controller to increase reproducibility and also provide a standardized resistance to our trainees. Furthermore, all randomizations regarding the team size and initial position are fixed. This makes qualitative comparisons of behavior between different checkpoints and experiments much easier. 
@@ -78,7 +81,7 @@ The GUI assumes all logs are stored inside the `wks_logs` folder. It selects onl
 
 Note: The GUI application is built using pyqtgraph and PyQt5, so double-check your pip package version to see if the dependencies are not already auto-resolved by the setup.py.
 
-## Value Function Visualizer ## 
+### Value Function Visualizer ### 
 
 ![Value Functions](docs/gifs/value_function.gif)
 

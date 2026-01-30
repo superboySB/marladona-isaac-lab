@@ -15,7 +15,70 @@
 RESOLUTION = 80
 NORMALIZE_EVALUATOR = False
 
+import os
 import matplotlib
+
+
+def _can_import(module_name):
+    try:
+        __import__(module_name)
+        return True
+    except Exception:
+        return False
+
+
+def _qt_available():
+    return _can_import("PyQt5") or _can_import("PySide2")
+
+
+def _tk_available():
+    return _can_import("tkinter")
+
+
+def _wx_available():
+    return _can_import("wx")
+
+
+def _gtk_available():
+    return _can_import("gi")
+
+
+def _force_gui_backend():
+    gui_keywords = ("qt", "tk", "wx", "gtk", "macosx")
+    candidates = []
+    env_backend = os.environ.get("MPLBACKEND")
+    if env_backend:
+        candidates.append((env_backend, None))
+    candidates += [
+        ("Qt5Agg", _qt_available),
+        ("QtAgg", _qt_available),
+        ("TkAgg", _tk_available),
+        ("WXAgg", _wx_available),
+        ("GTK3Agg", _gtk_available),
+    ]
+
+    for backend, checker in candidates:
+        if checker is not None and not checker():
+            continue
+        try:
+            matplotlib.use(backend, force=True)
+        except Exception:
+            continue
+        current = matplotlib.get_backend().lower()
+        if any(keyword in current for keyword in gui_keywords):
+            return
+
+    raise RuntimeError(
+        "No Matplotlib GUI backend available. Install one of the GUI bindings, for example:\n"
+        "- PyQt5 (recommended): /workspace/isaaclab/_isaac_sim/python.sh -m pip install PyQt5\n"
+        "- PySide2: /workspace/isaaclab/_isaac_sim/python.sh -m pip install PySide2\n"
+        "- Tk (system): apt-get update && apt-get install -y python3-tk\n"
+        "Also ensure DISPLAY is set and X11/Wayland is configured."
+    )
+
+
+_force_gui_backend()
+
 import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,6 +99,9 @@ SCALING = 0.6
 
 def move_figure(f, x, y):
     """Move figure's upper left corner to pixel (x, y)"""
+    manager = getattr(f.canvas, "manager", None)
+    if manager is None or not hasattr(manager, "window"):
+        return
     backend = matplotlib.get_backend()
     if backend == "TkAgg":
         f.canvas.manager.window.wm_geometry("+%d+%d" % (x, y))

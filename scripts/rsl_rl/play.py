@@ -12,6 +12,8 @@ import argparse
 import multiprocessing as mp
 import numpy as np
 import torch
+from pathlib import Path
+import sys
 
 from isaaclab.app import AppLauncher
 
@@ -58,13 +60,30 @@ simulation_app = app_launcher.app
 
 """Rest everything follows."""
 
+def _ensure_local_packages():
+    repo_root = Path(__file__).resolve().parents[2]
+    local_paths = [
+        repo_root / "source" / "rsl_marl",
+        repo_root / "source" / "isaaclab_marl",
+    ]
+    for path in local_paths:
+        path_str = str(path)
+        if path.is_dir() and path_str not in sys.path:
+            sys.path.insert(0, path_str)
+
+
 import gymnasium as gym
 import os
 import psutil
 from typing import TYPE_CHECKING
 
-from rsl_marl.runners import OnPolicyRunner
-from rsl_marl.utils.custom_vecenv_wrapper import CustomVecEnvWrapper
+try:
+    from rsl_marl.runners import OnPolicyRunner
+    from rsl_marl.utils.custom_vecenv_wrapper import CustomVecEnvWrapper
+except ModuleNotFoundError:
+    _ensure_local_packages()
+    from rsl_marl.runners import OnPolicyRunner
+    from rsl_marl.utils.custom_vecenv_wrapper import CustomVecEnvWrapper
 
 from isaaclab.envs import DirectMARLEnv, multi_agent_to_single_agent
 from isaaclab.utils.dict import print_dict
